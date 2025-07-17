@@ -3,7 +3,7 @@
 ## Phase 1: Core Improvements
 - [ ] **Error handling for invalid dates** - Skip malformed dates gracefully
 - [ ] **Multiple date formats** - Support MM/DD/YYYY, DD/MM/YYYY, DD.MM.YYYY
-- [ ] **Better logging** - Track sent reminders with timestamps
+- [x] **Better logging** - Track sent reminders with timestamps
 - [ ] **Configuration validation** - Check if sheet/columns exist on startup
 
 ## Phase 2: Enhanced Notifications

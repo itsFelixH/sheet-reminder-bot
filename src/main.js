@@ -6,6 +6,8 @@
 function sendDailyReminders() {
   const { spreadsheetId, sheetName, dateColumn, actionColumn, startRow } = CONFIG;
   
+  Logger.info('Starting daily reminder check');
+  
   try {
     const ss = SpreadsheetApp.openById(spreadsheetId);
     const sheet = ss.getSheetByName(sheetName);
@@ -17,19 +19,30 @@ function sendDailyReminders() {
     
     const todayFormatted = Utilities.formatDate(today, tz, "yyyy-MM-dd");
     let actions = [];
+    let totalRows = 0;
+    let emptyRows = 0;
 
     data.forEach((row, index) => {
       const [date, action] = row;
+      totalRows++;
       
-      // Skip empty rows
-      if (!date || !action) return; 
+      if (!date || !action) {
+        emptyRows++;
+        return;
+      }
       
-      // Format row date same as today
       const rowDateFormatted = Utilities.formatDate(date, tz, "yyyy-MM-dd");
       
       if (rowDateFormatted === todayFormatted) {
         actions.push(action);
       }
+    });
+
+    Logger.info('Sheet scan completed', {
+      totalRows,
+      emptyRows,
+      tasksFound: actions.length,
+      date: todayFormatted
     });
 
     if (actions.length > 0) {
@@ -44,12 +57,18 @@ function sendDailyReminders() {
         subject: `Action Reminder: ${actions.length} task(s) due today`,
         htmlBody: emailBody
       });
-      console.log(`Reminder email sent with ${actions.length} items`);
+      Logger.success('Reminder email sent', {
+        taskCount: actions.length,
+        tasks: actions
+      });
     } else {
-      console.log("No actions found for today");
+      Logger.info('No tasks due today');
     }
   } catch (error) {
-    console.error("Error: " + error.message);
+    Logger.error('Daily reminder failed', {
+      error: error.message,
+      stack: error.stack
+    });
   }
 }
 
@@ -64,6 +83,4 @@ function createDailyTrigger() {
     .atHour(8)
     .everyDays(1)
     .create();
-  
-  console.log('Daily trigger created successfully - emails will be sent at 8 AM');
 }
