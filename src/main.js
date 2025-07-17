@@ -1,12 +1,8 @@
 function sendDailyReminders() {
-  // Configuration
-  const sheetName = "Sheet1";
-  const dateColumn = 1;
-  const actionColumn = 2;
-  const startRow = 2;
+  const { spreadsheetId, sheetName, dateColumn, actionColumn, startRow } = CONFIG;
   
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = SpreadsheetApp.openById(spreadsheetId);
     const sheet = ss.getSheetByName(sheetName);
     if (!sheet) throw new Error(`Sheet "${sheetName}" not found`);
 
