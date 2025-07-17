@@ -1,3 +1,8 @@
+/**
+ * Checks Google Sheet for tasks due today and sends email reminders
+ * Runs daily via time-based trigger at 8 AM
+ * @throws {Error} If sheet not found or other configuration issues
+ */
 function sendDailyReminders() {
   const { spreadsheetId, sheetName, dateColumn, actionColumn, startRow } = CONFIG;
   
@@ -48,11 +53,17 @@ function sendDailyReminders() {
   }
 }
 
-// Create daily trigger
+/**
+ * Creates a daily time-based trigger to run sendDailyReminders at 8 AM
+ * Run this function once manually to set up automatic daily emails
+ * @throws {Error} If trigger creation fails
+ */
 function createDailyTrigger() {
   ScriptApp.newTrigger('sendDailyReminders')
     .timeBased()
     .atHour(8)
     .everyDays(1)
     .create();
+  
+  console.log('Daily trigger created successfully - emails will be sent at 8 AM');
 }
