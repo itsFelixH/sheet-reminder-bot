@@ -23,7 +23,8 @@ A Google Apps Script bot that reads a Google Sheet containing dates and actions,
 
 ## Configuration
 
-Edit these variables in `main.js`:
+Edit the CONFIG object in `src/config.js`:
+- `spreadsheetId`: Your Google Sheet ID (found in the URL: `https://docs.google.com/spreadsheets/d/SHEET_ID_HERE/edit`)
 - `sheetName`: Name of your sheet (default: "Sheet1")
 - `dateColumn`: Column number for dates (default: 1 = Column A)
 - `actionColumn`: Column number for actions (default: 2 = Column B)
