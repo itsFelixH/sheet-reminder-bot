@@ -9,10 +9,10 @@
 
 ## Phase 2: Enhanced Notifications
 
-- [ ] **Priority levels** - Add priority column (High/Medium/Low) with color-coded emails
-- [ ] **Time-based reminders** - Support specific reminder times (not just 8 AM)
-- [ ] **Advance notifications** - Remind X days before due date
-- [ ] **Better email formatting** - Group tasks by priority, add emojis
+- [x] **Priority levels** - Add priority column (High/Medium/Low) with color-coded emails
+- [x] **Time-based reminders** - Support specific reminder times (configurable hour)
+- [x] **Advance notifications** - Remind X days before due date
+- [x] **Better email formatting** - Group tasks by priority, add emojis
 
 ## Phase 3: Advanced Features
 
