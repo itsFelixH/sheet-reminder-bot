@@ -23,7 +23,7 @@ function sendDailyReminders() {
       const rowDateFormatted = Utilities.formatDate(date, tz, "yyyy-MM-dd");
       
       if (rowDateFormatted === todayFormatted) {
-        actions.push(`• ${action}`);
+        actions.push(action);
       }
     });
 
