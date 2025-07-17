@@ -8,6 +8,12 @@ function sendDailyReminders() {
   
   Logger.info('Starting daily reminder check');
   
+  // Configuration validation
+  if (!validateConfiguration()) {
+    Logger.error('Configuration validation failed');
+    return;
+  }
+  
   try {
     const ss = SpreadsheetApp.openById(spreadsheetId);
     const sheet = ss.getSheetByName(sheetName);
@@ -31,10 +37,19 @@ function sendDailyReminders() {
         return;
       }
       
-      const rowDateFormatted = Utilities.formatDate(date, tz, "yyyy-MM-dd");
-      
-      if (rowDateFormatted === todayFormatted) {
-        actions.push(action);
+      // Skip invalid dates gracefully
+      try {
+        const rowDateFormatted = Utilities.formatDate(date, tz, "yyyy-MM-dd");
+        
+        if (rowDateFormatted === todayFormatted) {
+          actions.push(action);
+        }
+      } catch (dateError) {
+        Logger.error(`Invalid date in row ${startRow + index}`, {
+          date: date,
+          action: action,
+          error: dateError.message
+        });
       }
     });
 
@@ -73,6 +88,52 @@ function sendDailyReminders() {
 }
 
 /**
+ * Validates configuration settings before running reminders
+ * @returns {boolean} True if configuration is valid
+ */
+function validateConfiguration() {
+  const { spreadsheetId, sheetName, dateColumn, actionColumn, startRow } = CONFIG;
+  
+  if (!spreadsheetId || spreadsheetId === 'YOUR_SHEET_ID_HERE') {
+    Logger.error('Invalid spreadsheet ID in config');
+    return false;
+  }
+  
+  if (!sheetName) {
+    Logger.error('Sheet name not configured');
+    return false;
+  }
+  
+  if (dateColumn < 1 || actionColumn < 1 || startRow < 1) {
+    Logger.error('Invalid column or row numbers in config');
+    return false;
+  }
+  
+  try {
+    const ss = SpreadsheetApp.openById(spreadsheetId);
+    const sheet = ss.getSheetByName(sheetName);
+    
+    if (!sheet) {
+      Logger.error(`Sheet "${sheetName}" not found in spreadsheet`);
+      return false;
+    }
+    
+    const maxColumn = Math.max(dateColumn, actionColumn);
+    if (sheet.getLastColumn() < maxColumn) {
+      Logger.error(`Sheet only has ${sheet.getLastColumn()} columns, need at least ${maxColumn}`);
+      return false;
+    }
+    
+    Logger.info('Configuration validation passed');
+    return true;
+    
+  } catch (error) {
+    Logger.error('Cannot access spreadsheet', { error: error.message });
+    return false;
+  }
+}
+
+/**
  * Creates a daily time-based trigger to run sendDailyReminders at 8 AM
  * Run this function once manually to set up automatic daily emails
  * @throws {Error} If trigger creation fails
@@ -83,4 +144,6 @@ function createDailyTrigger() {
     .atHour(8)
     .everyDays(1)
     .create();
+  
+  Logger.success('Daily trigger created - emails will be sent at 8 AM');
 }
